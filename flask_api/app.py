@@ -49,8 +49,8 @@ users_schema    = UserSchema(many=True)
 
 @app.route('/user/create', methods=['POST'])
 def create_user():
-    first_name  = request.json['first_name']
-    last_name   = request.json['last_name']
+    first_name   = request.json['first_name']
+    last_name    = request.json['last_name']
     is_active    = request.json['is_active']
 
     new_user = User(first_name, last_name, is_active)
@@ -70,18 +70,16 @@ def fetch_user(id):
     return jsonify(user_schema.dump(user)) 
 
 
-@app.route('/user/update', methods=['PUT'])
-def update_user():
-    user = User.query.get(id)
-    first_name  = request.json['first_name']
-    last_name   = request.json['last_name']
-    is_active    = request.json['is_active']
-
-    new_user = User(first_name, last_name, is_active)
-    db.session.add(new_user)
+@app.route('/user/update/<id>', methods=['PUT'])
+def update_user(id):
+    user            = User.query.get(id)
+    user.first_name = request.json['first_name']
+    user.last_name  = request.json['last_name']
+    user.is_active  = request.json['is_active']
+    
     db.session.commit()
 
-    return user_schema.jsonify(new_user)
+    return user_schema.jsonify(user)
 
 # Run the server
 if __name__ == '__main__':
