@@ -41,11 +41,13 @@ user_schema     = UserSchema()
 users_schema    = UserSchema(many=True)
 
 
-# Routes
-# fetch all users       --> /users 
-# fetch signle user     --> /user/<id>
-# update user           --> /user/update/id
-# create user           --> /user/create
+# Routes ----------------------------------------
+# USER                                          #
+# fetch all users       --> /users              #
+# fetch signle user     --> /user/<id>          #
+# update user           --> /user/update/id     #
+# create user           --> /user/create        #
+# -----------------------------------------------
 
 @app.route('/user/create', methods=['POST'])
 def create_user():
@@ -70,7 +72,7 @@ def fetch_user(id):
     return jsonify(user_schema.dump(user)) 
 
 
-@app.route('/user/update/<id>', methods=['PUT'])
+@app.route('/user/<id>/update', methods=['PUT'])
 def update_user(id):
     user            = User.query.get(id)
     user.first_name = request.json['first_name']
@@ -80,6 +82,15 @@ def update_user(id):
     db.session.commit()
 
     return user_schema.jsonify(user)
+
+@app.route('/user/<id>/delete', methods=['DELETE'])
+def delete_users(id):
+    user = User.query.get(id)
+    db.session.delete(user)
+    
+    db.session.commit()
+
+    return jsonify(users_schema.dump(user))
 
 # Run the server
 if __name__ == '__main__':
